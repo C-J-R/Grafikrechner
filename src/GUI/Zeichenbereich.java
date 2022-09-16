@@ -1,6 +1,7 @@
 package GUI;
 
 import DATA.Function;
+import DATA.FunctionContainer;
 import DATA.Polynom;
 
 import javax.swing.*;
@@ -20,8 +21,9 @@ public class Zeichenbereich extends JPanel {
 	final int ppE_delta = 7; //Zoom Speed
 
 	public int unitLineLength = 10;
+	public int renderIntervall = 10;
 
-	final int renderIntervall = 10;
+	private FunctionContainer fContainer;
 
 	public Zeichenbereich(int sizeX, int sizeY, int ppE) {
 		this.sizeX = sizeX;
@@ -34,30 +36,20 @@ public class Zeichenbereich extends JPanel {
 	@Override
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
-		//zeichneUrsprung(g);
+		zeichneUrsprung(g);
 		zeichneKoordinatenSystem(g);
-		//g.drawLine(0,0,0,1000);
-		//g.drawLine(999,0,999,1000);
-		//g.drawRect(0,0,sizeX, sizeY);
 		g.setColor(Color.RED);
-		//g.drawLine(0, 1000, 1000, 0);
-		//g.drawLine(0,sizeY,sizeX,sizeY);
-		//double[] d = {24, 50, 35, 10, 1};
+
+		fContainer = FunctionContainer.instance();
 		double[] d = {0, 0, 1};
-		drawFunction(new Polynom(d), /*16,*/ g);
+		fContainer.addFunction(new Polynom(d));
+		double[] d2 = {0, 0, 0, 1};
+		fContainer.addFunction(new Polynom(d2));
+		fContainer.renderAll(g, this);
+		//drawFunction(new Polynom(d), g);
+
 	}
 
-	public void drawFunction(Function f, /*double resolution,*/ Graphics g) {
-		Point a, b;
-		a = new Point(0, 0);
-		b = new Point(0, (int) (ursprung.y - (f.auswerten((0 - ursprung.getX()) / pixelProEinheit) * pixelProEinheit)));
-		for(int posX = 0; posX < sizeX + renderIntervall; posX += renderIntervall) {
-			a.move(b.x, b.y);
-			int posY = (int) (ursprung.y - (f.auswerten((posX - ursprung.getX()) / pixelProEinheit) * pixelProEinheit));
-			b.move(posX, posY);
-			g.drawLine(a.x, a.y, b.x, b.y);
-		}
-	}
 
 	private void zeichneUrsprung(Graphics g) {
 		g.drawOval((int) ursprung.getX() - 5, (int) ursprung.getY() - 5, 10, 10);
